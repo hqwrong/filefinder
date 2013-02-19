@@ -3,6 +3,7 @@
 #include <ftw.h>
 #include <assert.h>
 #include <string.h>
+#include <gtk/gtk.h>
 
 struct fname {
     char name[128];
@@ -70,25 +71,31 @@ filter(const struct fname_pool * pool, const char * pattern, char * result[], in
     return j;
 }
 
+static int
+_update_cb(const char * content, char ** result) {
+    return filter(pool_ref, content, result, 6);
+}
+
+static void
+_commit_cb(const char * content) {
+    printf(content);
+    bar_main_quit();
+}
+
 int main(int argc, char * argv[]) {
-    int i;
+    char * path;
     
-    if (argc < 3) {
-        printf("usage %s filename pattern", argv[0]);
-        return 1;
-    }
+    gtk_init(&argc, &argv);
+
+    path = argc==1 ? "." : argv[1];
 
     pool_ref = malloc(sizeof(struct fname_pool));
     pool_ref->fref = malloc(sizeof(struct fname) * 1024);
     pool_ref->cap = 1024;
     pool_ref->cnt = 0;
-    findfile(argv[1]);
+    findfile(path);
 
-    char * result[6];
-    int cnt = filter(pool_ref, argv[2], result, sizeof(result) / sizeof(char *));
-
-    printf("cnt %d\n", cnt);
-    for (i=0;i<cnt;++i) {
-        printf("%s\n",result[i]);
-    }
+    bar_set_update_cb(_update_cb);
+    bar_set_commit_cb(_commit_cb);
+    bar_main();
 }
