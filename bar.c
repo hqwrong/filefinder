@@ -44,14 +44,18 @@ changed_cb(GtkWidget * entry, GtkTreeView * tree) {
             gtk_list_store_append (store, &iter);
             gtk_list_store_set(store, &iter, 0, item[i], -1);
         }
-        /* gtk_widget_show(GTK_WIDGET(tree)); */
+
+        GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(tree));
+        gtk_window_resize(GTK_WINDOW(window), 1, 1);
     }
 }
 
 GtkWidget *
 new_bar() {
-    GtkWidget * window = gtk_window_new(GTK_WINDOW_TOPLEVEL);;
+    GtkWidget * window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
+    gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     
     GtkWidget * vbox = gtk_vbox_new(FALSE, 1);
     gtk_container_add(GTK_CONTAINER (window), vbox);
@@ -76,7 +80,7 @@ new_bar() {
 
     gtk_box_pack_start(GTK_BOX (vbox), entry, FALSE, FALSE, 0);
     gtk_widget_show(entry);
-    gtk_box_pack_start(GTK_BOX(vbox), tree, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), tree, TRUE, TRUE, 0);
     gtk_widget_show(tree);        
     return window;
 }
@@ -95,18 +99,6 @@ void *
 bar_set_commit_cb(COMMIT_CB cb) {
     commit_cb = cb;
 }
-
-/* int */
-/* main(int argc, char * argv[]) { */
-/*     GtkWidget * window; */
-    
-/*     gtk_init(&argc, &argv); */
-    
-/*     window = new_bar(); */
-/*     show_bar(window); */
-    
-/*     gtk_main(); */
-/* } */
 
 void
 bar_main() {
