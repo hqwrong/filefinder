@@ -38,21 +38,41 @@ findfile(const char * pathname) {
 }
 
 static int
-match(const char* name, const char * pattern) {
-    int nsz = strlen(name);
-    int psz = strlen(pattern);
-    int i;
-    
-    if (nsz < psz) {
+has_substr(const char * str, const char* substr) {
+    int sz = strlen(str);
+    int subsz = strlen(substr);
+    if (sz < subsz)
         return 0;
-    }
-
-    for(i=0; i<=nsz-psz; i++) {
-        if (strncmp(pattern, name + i, psz) == 0) {
+    
+    for(int i=0; i<=sz-subsz; i++) {
+        if (strncmp(substr, str + i, subsz) == 0) {
             return 1;
         }
     }
+
     return 0;
+}
+
+static int
+match(const char* name, const char * pattern) {
+    int sz = strlen(pattern);
+    char subpattern[sz+1][64];
+    char tmp[sz+1];
+    strncpy(tmp, pattern, sz+1);
+    char * substr = strtok(tmp, " ");
+
+    int n;
+    for (n=0; n< 64; n++) {
+        if (substr == NULL) break;
+        strncpy(subpattern[n], substr, sz+1);
+        substr = strtok(NULL, " ");
+    }
+    
+    for (int i=0; i<n; i++) {
+        if (!has_substr(name, subpattern[i]))
+            return 0;
+    }
+    return 1;
 }
 
 static int
