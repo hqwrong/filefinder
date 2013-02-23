@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <string.h>
 #include <gtk/gtk.h>
+#include "bar.h"
+#include "match.h"
 
 struct fname {
     char name[128];
@@ -69,7 +71,7 @@ match(const char* name, const char * pattern) {
     }
     
     for (int i=0; i<n; i++) {
-        if (!has_substr(name, subpattern[i]))
+        if (wildcard_match(name, subpattern[i]) == NULL)
             return 0;
     }
     return 1;

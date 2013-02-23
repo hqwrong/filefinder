@@ -1,8 +1,7 @@
 #include <gtk/gtk.h>
+#include "bar.h"
 
 #define ITEM_SIZE 6
-typedef int (*UPDATE_CB)(const char * content, char ** item) ;
-typedef void (*COMMIT_CB)(const char * content) ;
 
 static UPDATE_CB update_cb;
 static COMMIT_CB commit_cb;
@@ -94,12 +93,12 @@ new_bar() {
     return window;
 }
 
-void *
+void
 bar_set_update_cb(UPDATE_CB cb) {
     update_cb = cb;
 }
 
-void *
+void
 bar_set_commit_cb(COMMIT_CB cb) {
     commit_cb = cb;
 }
